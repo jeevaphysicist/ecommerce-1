@@ -12,7 +12,13 @@ const UserSchema = new Schema({
            },
     photo:{
         type:String
-    }
+    },
+    cart:{
+        type:Array
+    },
+    wishlist:{
+         type:Array
+     }
 })
 
 const User = models .Users ||  model('Users',UserSchema);

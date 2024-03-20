@@ -1,11 +1,25 @@
 import { ProductsCarousel } from 'components/Product/Products/ProductsCarousel';
 import { SectionTitle } from 'components/shared/SectionTitle/SectionTitle';
 import productData from 'data/product/product';
+import { useEffect, useState } from 'react';
 
 export const NewArrivals = () => {
   const newArrival = [...productData].filter(
     (arrival) => arrival.isNew === true
   );
+  const [products,setProducts] = useState([]);
+
+  useEffect(()=>{
+    GetShopProductsHandler();
+ 
+ },[])
+
+ const GetShopProductsHandler = async ()=>{
+    let response = await fetch(`/api/product/get-all-product`);
+    let data = await  response.json();
+    console.log("data",data.data);
+    setProducts(data.data);
+ }
 
   return (
     <>
@@ -18,7 +32,7 @@ export const NewArrivals = () => {
         />
 
         <div className='products-items'>
-          <ProductsCarousel products={newArrival} />
+          <ProductsCarousel products={products} />
         </div>
       </section>
       {/* <!-- NEW ARRIVALS EOF --> */}

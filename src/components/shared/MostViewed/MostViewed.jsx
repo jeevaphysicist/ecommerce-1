@@ -1,9 +1,21 @@
 import { ProductsCarousel } from 'components/Product/Products/ProductsCarousel';
 import { SectionTitle } from 'components/shared/SectionTitle/SectionTitle';
 import productData from 'data/product/product';
+import { useEffect, useState } from 'react';
 
 export const MostViewed = ({ additionalClass }) => {
-  const mostViewed = [...productData].slice(0, 6);
+  const [products, setProducts] = useState([]);
+
+ useEffect(()=>{
+    GetShopProductsHandler();
+ },[])
+
+ const GetShopProductsHandler = async ()=>{
+    let response = await fetch(`/api/product/get-all-product`);
+    let data = await  response.json();
+    console.log("data",data.data);
+    setProducts(data.data);
+ }
 
   return (
     <>
@@ -16,7 +28,7 @@ export const MostViewed = ({ additionalClass }) => {
         />
 
         <div className='products-items'>
-          <ProductsCarousel products={mostViewed} />
+          <ProductsCarousel products={products.slice(0,6)} />
         </div>
       </section>
       {/* <!-- MOST VIEWED EOF --> */}

@@ -5,14 +5,14 @@ export const AsideItem = ({ aside }) => {
   return (
     <>
       {/* <!-- BEING SHOP ASIDE CARD  --> */}
-      <Link href={`/product/${id}`}>
+      <Link href={`/product/${aside._id}`}>
         <a className='shop-aside__item-product'>
           <div className='shop-aside__item-product-img'>
-            <img src={image} className='js-img' alt='' />
+            <img src={aside.productImages[0]} className='js-img' alt='' />
           </div>
           <div className='shop-aside__item-product-info'>
-            <span className='shop-aside__item-product-title'>{name}</span>
-            <span className='shop-aside__item-product-price'>${price}</span>
+            <span className='shop-aside__item-product-title'>{aside.productName}</span>
+            <span className='shop-aside__item-product-price'>${aside.productPrice}</span>
             <ul className='star-rating'>
               {[...Array(star)].map((star, index) => {
                 <li key={index}>

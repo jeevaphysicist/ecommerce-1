@@ -30,6 +30,18 @@ const ProductSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "category", //referencing to category collection in db
     },
+    isNew:{
+      type:Boolean,
+      default:true,
+    },
+    isSale:{
+      type:Boolean,
+      default:false,
+    },
+    productNo:{
+      type:String,
+      required:true
+    }
   },
   { timestamps: true }
 );

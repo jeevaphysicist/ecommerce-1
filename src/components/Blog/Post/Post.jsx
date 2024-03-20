@@ -11,10 +11,15 @@ export const Post = () => {
 
   useEffect(() => {
     if (router.query.id) {
-      const data = blogs.find((bg) => bg.id === router.query.id);
-      setBlog(data);
+      GetSingleBlogHandler();
     }
   }, [router.query.id]);
+
+  const GetSingleBlogHandler = async()=>{
+      let response = await fetch(`/api/blog/get-single-blog/${router.query.id}`);
+      let data = await response.json();
+      setBlog(data.data);
+  }
 
   if (!blog) return <></>;
 
@@ -24,7 +29,7 @@ export const Post = () => {
       <div className='post'>
         <div className='wrapper'>
           <PostContent blog={blog} />
-          <PostComment blog={blog} />
+          {/* <PostComment blog={blog} /> */}
         </div>
         <img
           className='promo-video__decor js-img'

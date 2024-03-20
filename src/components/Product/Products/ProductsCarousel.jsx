@@ -50,10 +50,13 @@ export const ProductsCarousel = ({ products }) => {
     ],
   };
 
+  console.log("product for single",products);
+
   return (
     <>
       <Slider {...settings}>
         {products.map((product) => (
+  
           <SingleProduct
             addedInCart={Boolean(cart?.find((pd) => pd.id === product.id))}
             key={product.id}

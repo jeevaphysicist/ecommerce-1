@@ -5,15 +5,30 @@ import productData from 'data/product/product';
 
 export const Trending = () => {
   const trendingProducts = [...productData];
-  const [products, setProducts] = useState(trendingProducts);
+  const [products, setProducts] = useState([]);
   const [filterItem, setFilterItem] = useState('makeup');
 
-  useEffect(() => {
-    const newItems = trendingProducts.filter((pd) =>
-      pd.filterItems.includes(filterItem)
-    );
-    setProducts(newItems);
-  }, [filterItem]);
+  // useEffect(() => {
+  //   const newItems = trendingProducts.filter((pd) =>
+  //     pd.filterItems.includes(filterItem)
+  //   );
+  //   setProducts(newItems);
+  // }, [filterItem]);
+
+
+
+
+  useEffect(()=>{
+    GetShopProductsHandler();
+ 
+ },[])
+
+ const GetShopProductsHandler = async ()=>{
+    let response = await fetch(`/api/product/get-all-product`);
+    let data = await  response.json();
+    console.log("data",data.data);
+    setProducts(data.data);
+ }
 
   const filterList = [
     {
@@ -41,6 +56,7 @@ export const Trending = () => {
       value: 'hair',
     },
   ];
+  console.log("products",products);
   return (
     <>
       {/* <!-- BEGIN TRENDING --> */}

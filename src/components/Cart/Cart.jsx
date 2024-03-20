@@ -10,18 +10,31 @@ export const Cart = () => {
   const socialLinks = [...socialData];
 
   const total = cart.reduce(
-    (total, item) => total + Number(item.price) * Number(item.quantity),
+    (total, item) => total + Number(item.productPrice) * Number(item.quantity),
     0
   );
 
   const handleProductQuantity = (change, quantity, id) => {
-    console.log(change, quantity, id);
+    // console.log(change, quantity, id);
     if (change === 'increment') {
-      cart.find((item) => item.id === id).quantity = quantity + 1;
+      const updatedCart = cart.map(item => {
+        if (item._id === id) {
+          return { ...item, quantity: item.quantity + 1 };
+        }
+        return item;
+      });
+      setCart(updatedCart);
+      
       setCount(count + 1);
     }
     if (change === 'decrement' && quantity > 1) {
-      cart.find((item) => item.id === id).quantity = quantity - 1;
+      const updatedCart = cart.map(item => {
+        if (item._id === id) {
+          return { ...item, quantity: item.quantity - 1 };
+        }
+        return item;
+      });
+      setCart(updatedCart);
       setCount(count + 1);
     }
   };
@@ -29,6 +42,8 @@ export const Cart = () => {
   useEffect(() => {
     setCart(cart);
   }, [cart, count]);
+
+  // console.log("cart",cart); 
 
   return (
     <>
@@ -47,9 +62,9 @@ export const Cart = () => {
               {cart.map((cart) => (
                 <Card
                   onChangeQuantity={(change, quantity) =>
-                    handleProductQuantity(change, quantity, cart.id)
+                    handleProductQuantity(change, quantity, cart._id)
                   }
-                  key={cart.id}
+                  key={cart._id}
                   cart={cart}
                 />
               ))}

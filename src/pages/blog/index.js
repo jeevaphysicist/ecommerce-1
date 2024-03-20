@@ -14,13 +14,17 @@ const breadcrumbsData = [
   },
 ];
 const BlogPage = () => {
+
   useEffect(()=>{
-    fetch('/api/users/get',{ method:"GET" })
-    .then(res=>res.json())
-    .then(response=>{
-      console.log("response",response);
-    })
+
+    // fetch('/api/users/get',{ method:"GET" })
+    // .then(res=>res.json())
+    // .then(response=>{
+    //   console.log("response",response);
+    // })
+
 },[])
+
   return (
     <PublicLayout breadcrumb={breadcrumbsData} breadcrumbTitle='Blog'>
       <Blog />

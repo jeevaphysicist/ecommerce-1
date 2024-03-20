@@ -11,70 +11,103 @@ import { AsideItem } from '../shared/AsideItem/AsideItem';
 const { createSliderWithTooltip } = Slider;
 const Range = createSliderWithTooltip(Slider.Range);
 const options = [
-  { value: 'highToMin', label: 'From expensive to cheap' },
-  { value: 'minToHigh', label: 'From cheap to expensive' },
+  { value: -1, label: 'From expensive to cheap' },
+  { value: 1, label: 'From cheap to expensive' },
 ];
 export const Shop = () => {
   
   // My Declaration 
   const [Shopproducts,setShopProducts] = useState([]);
-  const allProducts = [...productData];
+  const [filteredProducts, setFilteredProducts]=useState([]) ;
+  const [currentPage, setCurrentPage] = useState(1) ;
+  const [shopFilter,setShopFilter] = useState({
+                                     ProductPrice:1,
+                                     lcost:null,
+                                     hcost:null,
+                                     productsort:1,
+                                     isNew:false,
+                                     isSale:false,
+                                     category:""
+                                      })
+
+const [timeoutId, setTimeoutId] = useState(null);
+  
+ 
+
+  const allProducts = [...Shopproducts];
   
 
-  const [productOrder, setProductOrder] = useState(
-    allProducts.sort((a, b) => (a.price < b.price ? 1 : -1))
-  );
+ 
 
-  const [products, setProducts] = useState([...productOrder]);
-  const [filter, setFilter] = useState({ isNew: false, isSale: true });
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
 
-  useEffect(() => {
-    setProducts(productOrder);
-  }, [productOrder]);
 
-  useEffect(() => {
-    if (filter.isNew && filter.isSale) {
-      const newPro = productOrder.filter(
-        (pd) => pd.isNew === true && pd.isSale === true
-      );
-      setProducts(newPro);
-    } else if (filter.isNew && !filter.isSale) {
-      const newPro = productOrder.filter((pd) => pd.isNew === true);
-      setProducts(newPro);
-    } else if (filter.isSale && !filter.isNew) {
-      const newPro = productOrder.filter((pd) => pd.isSale === true);
-      setProducts(newPro);
-    } else {
-      setProducts([...productOrder]);
-    }
-  }, [filter, productOrder]);
-  const recentlyViewed = [...productData].slice(0, 3);
-  const todaysTop = [...productData].slice(3, 6);
-  const paginate = usePagination(products, 9);
+  
+
+  useState(()=>{
+    // console.log("shop products",Shopproducts)
+      setProducts([...Shopproducts])
+  },[Shopproducts])
+
+  
+
+  const recentlyViewed = [...Shopproducts].slice(0, 3);
+  const todaysTop = [...Shopproducts].slice(3, 6);
+  const paginate = usePagination(products, 10);
 
   const handleSort = (value) => {
-    if (value === 'highToMin') {
-      const newOrder = allProducts.sort((a, b) => (a.price < b.price ? 1 : -1));
-      setProductOrder(newOrder);
-    }
-    if (value === 'minToHigh') {
-      const newOrder = allProducts.sort((a, b) => (a.price > b.price ? 1 : -1));
-      setProductOrder(newOrder);
-    }
+    setShopFilter((prev)=>({...prev,productsort:value})); 
   };
 
-  
+  const GetCategoryHandler = async ()=>{
+        let response = await fetch(`/api/category/get-all-category`);
+        let data = await response.json();
+        // console.log("category",data.data);
+        setCategories(data.data);
+  }
+
 
   useEffect(()=>{
-     GetShopProductsHandler();
-  },[])
+    GetCategoryHandler();
+    GetShopProductsHandler();
+ },[shopFilter])
 
-  const GetShopProductsHandler = async ()=>{
-     let response = await fetch(`/api/product/get-all-product`);
-     let data = await  response.json();
-     console.log("data",data);
-     setShopProducts(data.data);
+ const GetShopProductsHandler = async ()=>{
+  let filters = shopFilter;
+  let options = {
+    method: "POST",
+    body:JSON.stringify(filters),
+
   }
+    let response = await fetch(`/api/product/shop-filter-products/products`,options);
+    let data = await  response.json();
+    // console.log("POST data",data.data);
+    setProducts(data.data);
+    setShopProducts(data.data);
+ }
+ 
+ console.log("shop products",Shopproducts);
+  
+ const handleSliderChange = (value) => {
+  // console.log("handleSliderChange value ",value[0],value[1]);
+  clearTimeout(timeoutId); // Clear previous timeout
+    setTimeoutId(setTimeout(() => {
+      setShopFilter((prev) => ({...prev, lcost: value[0], hcost: value[1]}));
+    }, 500));  
+};
+  
+const SearchFilterHandler =(e)=>{
+  let filteredProductBySearch = Shopproducts.filter(element =>
+    element.productName.toLowerCase().includes(e.target.value.toLowerCase().trim()) ||
+    element.productDescription.toLowerCase().includes(e.target.value.toLowerCase().trim())
+);
+
+    setProducts(filteredProductBySearch);
+
+
+      //  console.log("filtered by search products",filteredProductBySearch);
+}
 
 
   return (
@@ -90,42 +123,22 @@ export const Shop = () => {
                   type='search'
                   className='form-control'
                   placeholder='Search'
+                  onChange={SearchFilterHandler}
                 />
                 <i className='icon-search'></i>
               </div>
               <div className='shop-aside__item'>
                 <span className='shop-aside__item-title'>Categories</span>
                 <ul>
-                  <li>
-                    <a href='#'>
-                      Make up <span>(37)</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href='#'>
-                      SPA <span>(162)</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href='#'>
-                      Perfume <span>(153)</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href='#'>
-                      Nails <span>(86)</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href='#'>
-                      Skin care <span>(48)</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href='#'>
-                      Hair care <span>(54)</span>
-                    </a>
-                  </li>
+                  {
+                    categories.length > 0 && categories.map(item=>
+                      <li key={item._id} style={shopFilter.category === item._id  ? {backgroundColor:"#FFEBEB"} : null}>
+                      <a onClick={()=>setShopFilter((prev)=>({...prev,category:item._id}))}>
+                        {item.categoryName} <span>({item.count})</span>
+                      </a>
+                    </li>)
+                  }
+                 
                 </ul>
               </div>
               <div className='shop-aside__item'>
@@ -133,8 +146,9 @@ export const Shop = () => {
                 <div className='range-slider'>
                   <Range
                     min={0}
-                    max={20}
-                    defaultValue={[0, 20]}
+                    max={100}
+                    defaultValue={[0, 100]}                    
+                    onChange={handleSliderChange}
                     tipFormatter={(value) => `${value}$`}
                     allowCross={false}
                     tipProps={{
@@ -146,13 +160,13 @@ export const Shop = () => {
               </div>
               <div className='shop-aside__item'>
                 <span className='shop-aside__item-title'>You have viewed</span>
-                {recentlyViewed.map((data) => (
+                {products.map((data) => (
                   <AsideItem key={data.id} aside={data} />
                 ))}
               </div>
               <div className='shop-aside__item'>
                 <span className='shop-aside__item-title'>Top 3 for today</span>
-                {todaysTop.map((data) => (
+                {products.map((data) => (
                   <AsideItem key={data.id} aside={data} />
                 ))}
               </div>
@@ -163,9 +177,9 @@ export const Shop = () => {
                 <div className='shop-main__checkboxes'>
                   <label className='checkbox-box'>
                     <input
-                      checked={filter.isSale}
+                      checked={shopFilter.isSale}
                       onChange={() =>
-                        setFilter({ ...filter, isSale: !filter.isSale })
+                        setShopFilter({ ...shopFilter, isSale: !shopFilter.isSale })
                       }
                       type='checkbox'
                     />
@@ -174,9 +188,9 @@ export const Shop = () => {
                   </label>
                   <label className='checkbox-box'>
                     <input
-                      checked={filter.isNew}
+                      checked={shopFilter.isNew}
                       onChange={() =>
-                        setFilter({ ...filter, isNew: !filter.isNew })
+                        setShopFilter({ ...shopFilter, isNew: !shopFilter.isNew })
                       }
                       type='checkbox'
                     />

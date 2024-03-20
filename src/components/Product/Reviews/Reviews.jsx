@@ -5,7 +5,7 @@ export const Reviews = ({ reviews }) => {
     <>
       {/* <!-- BEING REVIEWS    --> */}
       <div className='product-detail__items'>
-        {reviews.slice(0, 3).map((review, index) => (
+        {reviews?.slice(0, 3)?.map((review, index) => (
           <Card key={index} review={review} />
         ))}
         <a href='#' className='blog-item__link'>

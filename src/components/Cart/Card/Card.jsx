@@ -16,28 +16,28 @@ export const Card = ({ cart, onChangeQuantity }) => {
     <>
       <div className='cart-table__row'>
         <div className='cart-table__col'>
-          <Link href={`/product/${id}`}>
+          <Link href={`/product/${cart._id}`}>
             <a className='cart-table__img'>
-              <img src={image} className='js-img' alt='' />
+              <img src={cart.productImages[0]} className='js-img' alt='' />
             </a>
           </Link>
           <div className='cart-table__info'>
-            <Link href={`/product/${id}`}>
-              <a className='title5'>{name}</a>
+            <Link href={`/product/${cart._id}`}>
+              <a className='title5'>{cart.productName}</a>
             </Link>
-            {isStocked && (
+            {cart.productInStock === "yes" && (
               <span className='cart-table__info-stock'>in stock</span>
             )}
-            <span className='cart-table__info-num'>SKU: {productNumber}</span>
+            <span className='cart-table__info-num'>SKU: {cart._id}</span>
           </div>
         </div>
         <div className='cart-table__col'>
-          {oldPrice ? (
+          {cart.productDiscount ? (
             <span className='cart-table__price'>
-              <span>${oldPrice}</span>${price}
+              <span>${cart.productDiscount}</span>${cart.productPrice}
             </span>
           ) : (
-            <span className='cart-table__price'>${price}</span>
+            <span className='cart-table__price'>${cart.productPrice}</span>
           )}
         </div>
         <div className='cart-table__col'>
@@ -66,7 +66,7 @@ export const Card = ({ cart, onChangeQuantity }) => {
         </div>
         <div className='cart-table__col'>
           <span className='cart-table__total'>
-            ${(price * quantity).toFixed(2)}
+            ${(cart.productPrice * quantity).toFixed(2)}
           </span>
         </div>
       </div>

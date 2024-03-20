@@ -7,6 +7,7 @@ import { ReviewFrom } from '../ReviewForm/ReviewFrom';
 import { useRouter } from 'next/router';
 import { CartContext } from 'pages/_app';
 
+
 export const ProductDetails = () => {
   const router = useRouter();
   const { cart, setCart } = useContext(CartContext);
@@ -15,17 +16,14 @@ export const ProductDetails = () => {
   const products = [...productData];
   const [product, setProduct] = useState(null);
   const [addedInCart, setAddedInCart] = useState(false);
-
-  useEffect(() => {
-    if (router.query.id) {
-      const data = products.find((pd) => pd.id === router.query.id);
-      setProduct(data);
-    }
-  }, [router.query.id]);
+    // console.log(router)
+    useEffect(()=>{
+      GetProductHandler()
+  },[router.query.id])
 
   useEffect(() => {
     if (product) {
-      setAddedInCart(Boolean(cart?.find((pd) => pd.id === product.id)));
+      setAddedInCart(Boolean(cart?.find((pd) => pd._id === product._id)));
     }
   }, [product, cart]);
 
@@ -39,6 +37,23 @@ export const ProductDetails = () => {
     const newProduct = { ...product, quantity: quantity };
     setCart([...cart, newProduct]);
   };
+
+
+
+  const GetProductHandler = async ()=>{
+    // console.log("router",router.query.id)
+    if (router.query.id) {
+      let response = await fetch(`/api/product/get-single-product/${router.query.id}`)
+      let data = await response.json();
+      console.log("data",data.data);
+
+      setProduct(data.data);
+    }
+  }
+
+  // Home , cart , blog , shop ,checkout , login ,signup
+
+  console.log("product",product);
 
   if (!product) return <></>;
   return (
@@ -57,7 +72,7 @@ export const ProductDetails = () => {
                   lazyLoad={true}
                   ref={(slider1) => setNav1(slider1)}
                 >
-                  {product.imageGallery.map((img, index) => (
+                  { product.productImages.length > 0 && product.productImages.map((img, index) => (
                     <div key={index} className='product-slider__main-item'>
                       <div className='products-item__type'>
                         {product.isSale && (
@@ -83,7 +98,7 @@ export const ProductDetails = () => {
                   swipeToSlide={true}
                   focusOnSelect={true}
                 >
-                  {product.imageGallery.map((img, index) => (
+                  {product?.productImages?.map((img, index) => (
                     <div key={index} className='product-slider__nav-item'>
                       <img src={img} alt='product' />
                     </div>
@@ -92,22 +107,22 @@ export const ProductDetails = () => {
               </div>
             </div>
             <div className='product-info'>
-              <h3>{product.name}</h3>
-              {product.isStocked ? (
+              <h3>{product.productName}</h3>
+              {product?.productInStock ? (
                 <span className='product-stock'>in stock</span>
               ) : (
                 ''
               )}
 
-              <span className='product-num'>SKU: {product.productNumber}</span>
-              {product.oldPrice ? (
+              <span className='product-num'>SKU: {product.productNo}</span>
+              {product.productDiscount ? (
                 <span className='product-price'>
-                  <span>${product.oldPrice}</span>${product.price}
+                  <span>${product.productDiscount}</span>${product.productPrice}
                 </span>
               ) : (
-                <span className='product-price'>${product.price}</span>
+                <span className='product-price'>${product.productPrice}</span>
               )}
-              <p>{product.content}</p>
+              <p>{product.productDescription}</p>
 
               {/* <!-- Social Share Link --> */}
               <div className='contacts-info__social'>
@@ -126,9 +141,9 @@ export const ProductDetails = () => {
               {/* <!-- Product Color info--> */}
               <div className='product-options'>
                 <div className='product-info__color'>
-                  <span>Color:</span>
+                  {/* <span>Color:</span> */}
                   <ul>
-                    {product?.colors.map((color, index) => (
+                    {product?.colors?.map((color, index) => (
                       <li
                         onClick={() => setActiveColor(index)}
                         className={activeColor === index ? 'active' : ''}
