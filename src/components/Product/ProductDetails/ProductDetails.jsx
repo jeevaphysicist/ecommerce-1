@@ -6,11 +6,12 @@ import { Reviews } from '../Reviews/Reviews';
 import { ReviewFrom } from '../ReviewForm/ReviewFrom';
 import { useRouter } from 'next/router';
 import { CartContext } from 'pages/_app';
-
+import { useSession } from 'next-auth/react';
 
 export const ProductDetails = () => {
   const router = useRouter();
   const { cart, setCart } = useContext(CartContext);
+  let  {data:session}  = useSession();
 
   const socialLinks = [...socialData];
   const products = [...productData];
@@ -188,7 +189,7 @@ export const ProductDetails = () => {
               <div className='product-buttons'>
                 <button
                   disabled={addedInCart}
-                  onClick={() => handleAddToCart()}
+                  onClick={() => {session ? handleAddToCart() : router.push('/login')}}
                   className='btn btn-icon'
                 >
                   <i className='icon-cart'></i> cart
@@ -221,8 +222,8 @@ export const ProductDetails = () => {
                 {/* <!-- Product description --> */}
                 {tab === 1 && (
                   <div className='tab-cont'>
-                    <p>{product.description}</p>
-                    <p>{product.description}</p>
+                    <p>{product.productDescription}</p>
+                    {/* <p>{product.description}</p> */}
                   </div>
                 )}
 
